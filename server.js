@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
 const app = express()
+app.set('view engine', 'ejs')
 
 app.listen(3000, function() {
     console.log('listening on 3000')
@@ -20,6 +21,13 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
 
     app.get('/', (req, res) => {
         res.sendFile(__dirname + '/index.html')
+        const cursor = db.collection('quotes').find().toArray()
+        .then(results => {
+            console.log(results)
+        })
+        .catch(error => console.error(error))
+        // console.log(cursor)
+
     })
 
     app.post('/quotes', (req, res) => {
