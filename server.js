@@ -4,6 +4,9 @@ const MongoClient = require('mongodb').MongoClient
 const app = express()
 app.set('view engine', 'ejs')
 
+// Middleware
+app.use(express.static('public'))
+
 app.listen(3000, function() {
     console.log('listening on 3000')
 })
@@ -20,13 +23,13 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
     app.use(bodyParser.urlencoded({ extended: true }))
 
     app.get('/', (req, res) => {
-        res.sendFile(__dirname + '/index.html')
+        // res.sendFile(__dirname + '/index.html')
         const cursor = db.collection('quotes').find().toArray()
         .then(results => {
-            console.log(results)
+            res.render('index.ejs', {quotes: results})
         })
         .catch(error => console.error(error))
-        // console.log(cursor)
+        
 
     })
 
