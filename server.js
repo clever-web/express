@@ -6,6 +6,7 @@ app.set('view engine', 'ejs')
 
 // Middleware
 app.use(express.static('public'))
+app.use(bodyParser.json())
 
 app.listen(3000, function() {
     console.log('listening on 3000')
@@ -40,6 +41,38 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
         })
         .catch(error => console.error(error))
         // console.log(req.body)
+    })
+
+    app.put('/quotes', (req, res) => {
+        quotesCollection.findOneAndUpdate (
+            {name: 'Node'},
+            {
+                $set: {
+                    name: req.body.name,
+                    quote: req.body.quote
+                }
+            },
+            {
+                upsert: true
+            }
+        )
+        .then(result => {
+            res.json('Success')
+        })
+        .catch(error => console.error(error))
+    })
+
+    app.delete('/quotes', (req, res) => {
+        quotesCollection.deleteOne(
+            { name: req.body.name }
+        )
+        .then(result => {
+            if (result.deletedCount === 0) {
+                return res.json('No quote to delete')
+            }
+            res.json(`Deleted first quote`)
+        })
+        .catch(error => console.error(error))
     })
 })
 
